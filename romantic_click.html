@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Romantic Hack — Click Reveal (with Music)</title>
+<style>
+  body {
+    background: #0a0a0a;
+    color: white;
+    font-family: monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+    text-align: center;
+  }
+  .heart {
+    font-size: 40px;
+    color: red;
+    animation: pulse 1s infinite;
+    white-space: pre;
+    text-align: center;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+  .message {
+    margin-top: 20px;
+    font-size: 1.3rem;
+    white-space: pre-wrap;
+    border-right: 2px solid;
+    width: fit-content;
+    animation: blink 0.7s infinite step-end alternate;
+    min-height: 2em;
+  }
+  @keyframes blink {
+    50% { border-color: transparent; }
+  }
+  .hint {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: gray;
+  }
+</style>
+</head>
+<body>
+<div class="heart" id="heart"></div>
+<div class="message" id="message"></div>
+<div class="hint">💡 Click anywhere to reveal the next line. Music will fade in on first click.</div>
+
+<!-- Replace music.mp3 with your own file or an online MP3 link -->
+<audio id="bgm" src="music.mp3" preload="auto" loop></audio>
+
+<script>
+const heartShape = [
+  "  **     **  ",
+  " ****   **** ",
+  " ****** ****** ",
+  " ************* ",
+  "  ***********  ",
+  "   *********   ",
+  "    *******    ",
+  "     *****     ",
+  "      ***      ",
+  "       *       "
+];
+
+const messages = [
+  { text: "Hey you... 💌", color: "pink" },
+  { text: "Are you a semicolon?", color: "lightblue" },
+  { text: "Because you complete me.", color: "lightgreen" },
+  { text: "My love for you is like an infinite loop...", color: "orange" },
+  { text: "It just keeps running. ❤️", color: "red" },
+  { text: "So consider this...", color: "yellow" },
+  { text: "git commit -m 'My heart belongs to you' 💍", color: "violet" },
+  { text: "P.S. No debugging required. You’re perfect.", color: "white" }
+];
+
+document.getElementById("heart").textContent = heartShape.join("\n");
+
+let currentIndex = 0;
+let typing = false;
+let musicStarted = false;
+
+async function typeWriter(text, color) {
+  typing = true;
+  const messageEl = document.getElementById("message");
+  messageEl.style.color = color;
+  messageEl.textContent = "";
+  for (let char of text) {
+    messageEl.textContent += char;
+    await new Promise(res => setTimeout(res, 60));
+  }
+  typing = false;
+}
+
+document.body.addEventListener("click", async () => {
+  if (!musicStarted) {
+    const bgm = document.getElementById("bgm");
+    bgm.volume = 0.35;
+    bgm.play();
+    musicStarted = true;
+  }
+  if (typing) return;
+  if (currentIndex < messages.length) {
+    await typeWriter(messages[currentIndex].text, messages[currentIndex].color);
+    currentIndex++;
+  } else {
+    document.querySelector(".hint").textContent = "💖 That's all. You're amazing.";
+  }
+});
+</script>
+</body>
+</html>
+
